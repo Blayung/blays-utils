@@ -1,0 +1,28 @@
+plugins {
+	id "fabric-loom" version "1.2-SNAPSHOT"
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:1.19.4"
+	mappings "net.fabricmc:yarn:1.19.4+build.2:v2"
+	modImplementation "net.fabricmc:fabric-loader:0.14.19"
+
+	modImplementation "net.fabricmc.fabric-api:fabric-api:0.79.0+1.19.4"
+    implementation "com.google.code.gson:gson:2.10.1"
+}
+
+base.archivesName = "blays-utils-1.0.0"
+
+jar.from("LICENSE")
+
+def javaVersion=JavaVersion.VERSION_17
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = javaVersion.toString() as Integer
+}
+
+java {
+	withSourcesJar()
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+}

@@ -1,0 +1,35 @@
+{
+    "schemaVersion": 1,
+
+    "id": "blays-utils",
+    "version": "1.0.0",
+    "name": "Blay's utils",
+    "description": "My own minecraft fabric server mod that does various different things.",
+    "license": "GPL-3.0-only",
+
+    "authors": [
+        "Blay"
+    ],
+    "contributors": [],
+
+    "contact": {
+        "homepage": "https://github.com/Blayung/blays-utils",
+        "sources": "https://github.com/Blayung/blays-utils",
+        "issues": "https://github.com/Blayung/blays-utils/issues",
+        "email": "gpewojan1@gmail.com"
+    },
+
+    "environment": "server",
+    "entrypoints": {
+        "server": [
+            "com.blay.blaysutils.BlaysUtilsMain"
+        ]
+    },
+
+    "depends": {
+        "fabricloader": "*",
+        "fabric-api": "*",
+        "minecraft": "*",
+        "java": ">=17"
+    }
+}
