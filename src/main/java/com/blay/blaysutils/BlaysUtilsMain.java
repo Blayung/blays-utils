@@ -2,9 +2,12 @@ package com.blay.blaysutils;
 
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.api.DedicatedServerModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ServerMessageEvents;
+import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 
 import com.mojang.logging.LogUtils;
+
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.util.crash.CrashReport;
 
 import com.google.gson.Gson;
 
@@ -14,20 +17,20 @@ import java.io.FileReader;
 
 public class BlaysUtilsMain implements DedicatedServerModInitializer {
     private class JsonConfig {
-        public String[] info = [
+        public String[] info = {
             "§6asd",
             "§6das"
-        ];
+        };
 
-        public String[] rules = [
+        public String[] rules = {
             "§casd",
             "§cdas"
-        ];
+        };
 
-        public String[] hello = [
+        public String[] hello = {
             "§4asd, %p",
             "§4%%, das"
-        ];
+        };
     }
     private JsonConfig config;
  
@@ -68,8 +71,8 @@ public class BlaysUtilsMain implements DedicatedServerModInitializer {
             LogUtils.getLogger().info(i);
         }
 
-        ServerMessageEvents.CHAT_MESSAGE.register(server -> {
-            LogUtils.getLogger().info("test");
-        });
+        //ServerMessageEvents.CHAT_MESSAGE.register(listener -> {
+        //    LogUtils.getLogger().info("test");
+        //});
     }
 }
