@@ -1,0 +1,15 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+
+    "package": "com.blay.blaysutils.mixin",
+    "compatibilityLevel": "JAVA_17",
+
+    "server": [
+        "ServerPlayNetworkHandlerMixin"
+    ],
+
+    "injectors": {
+        "defaultRequire": 1
+    }
+}

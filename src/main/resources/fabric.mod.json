@@ -26,6 +26,10 @@
         ]
     },
 
+    "mixins": [
+        "blays-utils.mixins.json"
+    ],
+
     "depends": {
         "fabricloader": "*",
         "fabric-api": "*",

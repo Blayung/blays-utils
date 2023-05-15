@@ -2,12 +2,16 @@ package com.blay.blaysutils;
 
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.api.DedicatedServerModInitializer;
-import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 
 import com.mojang.logging.LogUtils;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.Command;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.crash.CrashReport;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Text;
 
 import com.google.gson.Gson;
 
@@ -16,7 +20,7 @@ import java.io.FileWriter;
 import java.io.FileReader;
 
 public class BlaysUtilsMain implements DedicatedServerModInitializer {
-    private class JsonConfig {
+    public class JsonConfig {
         public String[] info = {
             "§6asd",
             "§6das"
@@ -32,10 +36,9 @@ public class BlaysUtilsMain implements DedicatedServerModInitializer {
             "§4%%, das"
         };
     }
-    private JsonConfig config;
- 
-    @Override
-    public void onInitializeServer() {
+    public JsonConfig config;
+
+    public void updateConfig(){
         try {
             File configFile = FabricLoader.getInstance().getConfigDir().resolve("blays-utils.json").toFile();
 
@@ -60,19 +63,39 @@ public class BlaysUtilsMain implements DedicatedServerModInitializer {
             MinecraftClient.getInstance().cleanUpAfterCrash();
             MinecraftClient.getInstance().printCrashReport(crashReport);
         }
+    }
+ 
+    @Override
+    public void onInitializeServer() {
+        LogUtils.getLogger().info("Loading Blay's Utils...");
 
-        for (String i:config.info){
-            LogUtils.getLogger().info(i);
-        }
-        for (String i:config.rules){
-            LogUtils.getLogger().info(i);
-        }
-        for (String i:config.hello){
-            LogUtils.getLogger().info(i);
-        }
+        updateConfig();
 
-        //ServerMessageEvents.CHAT_MESSAGE.register(listener -> {
-        //    LogUtils.getLogger().info("test");
-        //});
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal("blays-utils-reload")
+            .requires(source -> source.hasPermissionLevel(4))
+            .executes(context -> {
+                context.getSource().sendMessage(Text.literal("Reloading blay's utils' config..."));
+                updateConfig();
+                return Command.SINGLE_SUCCESS;
+            })
+        ));
+
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal("info")
+            .executes(context -> {
+                for(String line:config.info){
+                    context.getSource().sendMessage(Text.literal(line));
+                }
+                return Command.SINGLE_SUCCESS;
+            })
+        ));
+
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal("rules")
+            .executes(context -> {
+                for(String line:config.rules){
+                    context.getSource().sendMessage(Text.literal(line));
+                }
+                return Command.SINGLE_SUCCESS;
+            })
+        ));
     }
 }
