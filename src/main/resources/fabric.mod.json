@@ -22,7 +22,7 @@
     "environment": "server",
     "entrypoints": {
         "server": [
-            "com.blay.blaysutils.BlaysUtilsMain"
+            "com.blay.blaysutils.BlaysUtils"
         ]
     },
 

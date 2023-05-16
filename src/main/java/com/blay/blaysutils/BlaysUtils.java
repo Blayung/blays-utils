@@ -19,26 +19,29 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.FileReader;
 
-public class BlaysUtilsMain implements DedicatedServerModInitializer {
+public class BlaysUtils implements DedicatedServerModInitializer {
     public class JsonConfig {
-        public String[] info = {
-            "§6asd",
-            "§6das"
+        public String[] info_text = {
+            "§6INFORMATION ABOUT THE SERVER",
+            "§6A SECONDARY LINE"
         };
 
-        public String[] rules = {
-            "§casd",
-            "§cdas"
+        public String[] rules_text = {
+            "§cTHE RULES",
+            "§c1. SOMETHING"
         };
 
-        public String[] hello = {
-            "§4asd, %p",
-            "§4%%, das"
+        public String[] hello_text = {
+            "§4HELLO, %p!",
+            "§4A SECONDARY LINE"
         };
+
+        public String broadcast_chat_prefix = "§c[!] ";
+        public String broadcast_title_prefix = "§c";
     }
-    public JsonConfig config;
+    public static JsonConfig config;
 
-    public void updateConfig(){
+    private void updateConfig(){
         try {
             File configFile = FabricLoader.getInstance().getConfigDir().resolve("blays-utils.json").toFile();
 
@@ -48,7 +51,7 @@ public class BlaysUtilsMain implements DedicatedServerModInitializer {
                 configFile.createNewFile();
 
                 FileWriter fileWriter=new FileWriter(configFile);
-                fileWriter.write("{\n    \"info\": [\n        \"§6asd\",\n        \"§6das\"\n    ],\n\n    \"rules\": [\n        \"§casd\",\n        \"§cdas\"\n    ],\n\n    \"hello\": [\n        \"§4asd, %p\",\n        \"§4%%, das\"\n    ]\n}");
+                fileWriter.write("{\n    \"info_text\": [\n        \"§6INFORMATION ABOUT THE SERVER\",\n        \"§6A SECONDARY LINE\"\n    ],\n\n    \"rules_text\": [\n        \"§cTHE RULES\",\n        \"§c1. SOMETHING\"\n    ],\n\n    \"hello_text\": [\n        \"§4HELLO, %p!\",\n        \"§4A SECONDARY LINE\"\n    ]\n\n    \"broadcast_chat_prefix\": \"§c[!] \"\n    \"broadcast_title_prefix\": \"§c\"}");
                 fileWriter.close();
             }
 
@@ -94,6 +97,13 @@ public class BlaysUtilsMain implements DedicatedServerModInitializer {
                 for(String line:config.rules){
                     context.getSource().sendMessage(Text.literal(line));
                 }
+                return Command.SINGLE_SUCCESS;
+            })
+        ));
+
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal("broadcast")
+            .executes(context -> {
+                System.out.println("todo");
                 return Command.SINGLE_SUCCESS;
             })
         ));
