@@ -7,8 +7,6 @@ import com.mojang.logging.LogUtils;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.Command;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.crash.CrashReport;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
@@ -33,7 +31,7 @@ public class BlaysUtils implements DedicatedServerModInitializer {
 
         public String[] hello_text = {
             "§4HELLO, %p!",
-            "§4A SECONDARY LINE"
+            "§4100%% FUN"
         };
 
         public String broadcast_chat_prefix = "§c[!] ";
@@ -41,7 +39,7 @@ public class BlaysUtils implements DedicatedServerModInitializer {
     }
     public static JsonConfig config;
 
-    private void updateConfig(){
+    private void updateConfig() {
         try {
             File configFile = FabricLoader.getInstance().getConfigDir().resolve("blays-utils.json").toFile();
 
@@ -51,7 +49,7 @@ public class BlaysUtils implements DedicatedServerModInitializer {
                 configFile.createNewFile();
 
                 FileWriter fileWriter=new FileWriter(configFile);
-                fileWriter.write("{\n    \"info_text\": [\n        \"§6INFORMATION ABOUT THE SERVER\",\n        \"§6A SECONDARY LINE\"\n    ],\n\n    \"rules_text\": [\n        \"§cTHE RULES\",\n        \"§c1. SOMETHING\"\n    ],\n\n    \"hello_text\": [\n        \"§4HELLO, %p!\",\n        \"§4A SECONDARY LINE\"\n    ]\n\n    \"broadcast_chat_prefix\": \"§c[!] \"\n    \"broadcast_title_prefix\": \"§c\"}");
+                fileWriter.write("{\n    \"info_text\": [\n        \"§6INFORMATION ABOUT THE SERVER\",\n        \"§6A SECONDARY LINE\"\n    ],\n\n    \"rules_text\": [\n        \"§cTHE RULES\",\n        \"§c1. SOMETHING\"\n    ],\n\n    \"hello_text\": [\n        \"§4HELLO, %p!\",\n        \"§4100%% FUN\"\n    ],\n\n    \"broadcast_chat_prefix\": \"§c[!] \",\n    \"broadcast_title_prefix\": \"§c\"\n}");
                 fileWriter.close();
             }
 
@@ -61,10 +59,7 @@ public class BlaysUtils implements DedicatedServerModInitializer {
         }
         catch(Exception e)
         {
-            CrashReport crashReport = MinecraftClient.getInstance().addDetailsToCrashReport(new CrashReport("Blay's utils config error", e));
-            LogUtils.getLogger().error(LogUtils.FATAL_MARKER, "Unreported exception thrown!", e);
-            MinecraftClient.getInstance().cleanUpAfterCrash();
-            MinecraftClient.getInstance().printCrashReport(crashReport);
+            LogUtils.getLogger().error(LogUtils.FATAL_MARKER, "An error occured while loading blay's utils' config!", e);
         }
     }
  
@@ -85,7 +80,7 @@ public class BlaysUtils implements DedicatedServerModInitializer {
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal("info")
             .executes(context -> {
-                for(String line:config.info){
+                for(String line:config.info_text){
                     context.getSource().sendMessage(Text.literal(line));
                 }
                 return Command.SINGLE_SUCCESS;
@@ -94,7 +89,7 @@ public class BlaysUtils implements DedicatedServerModInitializer {
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal("rules")
             .executes(context -> {
-                for(String line:config.rules){
+                for(String line:config.rules_text){
                     context.getSource().sendMessage(Text.literal(line));
                 }
                 return Command.SINGLE_SUCCESS;

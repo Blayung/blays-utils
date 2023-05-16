@@ -15,10 +15,12 @@ import com.blay.blaysutils.BlaysUtils;
 
 @Mixin(ServerPlayNetworkHandler.class)
 public class ServerPlayNetworkHandlerMixin {
-	@Inject(at = @At("TAIL"), method = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;<init>(Lnet/minecraft/server/MinecraftServer;Lnet/minecraft/network/ClientConnection;Lnet/minecraft/server/network/ServerPlayerEntity;)V")
+	@Inject(at = @At("RETURN"), method = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;<init>(Lnet/minecraft/server/MinecraftServer;Lnet/minecraft/network/ClientConnection;Lnet/minecraft/server/network/ServerPlayerEntity;)V")
 	private void inject(MinecraftServer server, ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci) {
-        for(String line : BlaysUtils.config.hello) {
-            line.replace("%p", player.getName());
+        for(String line : BlaysUtils.config.hello_text) {
+            line=line.replace("%%", "\uf420");
+            line=line.replace("%p", player.getName().getString());
+            line=line.replace("\uf420", "%");
             player.sendMessage(Text.literal(line));
         }
 	}
