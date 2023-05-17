@@ -59,20 +59,20 @@ public class BlaysUtils implements DedicatedServerModInitializer {
         }
         catch(Exception e)
         {
-            LogUtils.getLogger().error(LogUtils.FATAL_MARKER, "An error occured while loading blay's utils' config!", e);
+            LogUtils.getLogger().error(LogUtils.FATAL_MARKER, "An error occured while loading blay's server utilities' config!", e);
         }
     }
  
     @Override
     public void onInitializeServer() {
-        LogUtils.getLogger().info("Loading Blay's Utils...");
+        LogUtils.getLogger().info("Loading Blay's Server Utilities...");
 
         updateConfig();
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal("blays-utils-reload")
             .requires(source -> source.hasPermissionLevel(4))
             .executes(context -> {
-                context.getSource().sendMessage(Text.literal("Reloading blay's utils' config..."));
+                context.getSource().sendMessage(Text.literal("Reloading blay's server utilities' config..."));
                 updateConfig();
                 return Command.SINGLE_SUCCESS;
             })

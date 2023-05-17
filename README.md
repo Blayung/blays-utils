@@ -1,4 +1,5 @@
-# Blay's Utils
+# Blay's Server Utlities
+## THIS MOD IS STILL IN DEVELOPMENT!
 ## What is this?
 It is a simple minecraft fabric server mod that does various different, common things useful an almost every minecraft server.
 ## Included features

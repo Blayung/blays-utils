@@ -3,8 +3,8 @@
 
     "id": "blays-utils",
     "version": "1.0.0",
-    "name": "Blay's utils",
-    "description": "My own minecraft fabric server mod that does various different things.",
+    "name": "Blay's Server Utilities",
+    "description": "A simple minecraft fabric server mod that does various different, common things useful an almost every minecraft server.",
     "license": "GPL-3.0-only",
 
     "authors": [
