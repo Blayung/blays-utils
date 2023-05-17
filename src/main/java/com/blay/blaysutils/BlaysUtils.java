@@ -22,6 +22,7 @@ import java.io.FileWriter;
 import java.io.FileReader;
 
 public class BlaysUtils implements DedicatedServerModInitializer {
+    // Config's format
     public class JsonConfig {
         public boolean disable_info=false;
         public String[] info_text = {
@@ -46,6 +47,7 @@ public class BlaysUtils implements DedicatedServerModInitializer {
     }
     public static JsonConfig config;
 
+    // Loading the config
     private void updateConfig() {
         try {
             File configFile = FabricLoader.getInstance().getConfigDir().resolve("blays-utils.json").toFile();
@@ -76,47 +78,44 @@ public class BlaysUtils implements DedicatedServerModInitializer {
 
         updateConfig();
 
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal("blays-utils-reload")
-            .requires(source -> source.hasPermissionLevel(4))
-            .executes(context -> {
-                context.getSource().sendMessage(Text.literal("Reloading blay's server utilities' config..."));
-                updateConfig();
-                return Command.SINGLE_SUCCESS;
-            })
-        ));
-
-        if(!config.disable_info){
-            CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal("info")
-                .executes(context -> {
-                    if(config.disable_info){
-                        context.getSource().sendMessage(Text.literal("§cThe /info command is disabled! Please notify the administration, that they should reset the server, or the players will be able to use the command, and get that message."));
-                    }else{
-                        for(String line:config.info_text){
-                            context.getSource().sendMessage(Text.literal(line));
-                        }
-                    }
-                    return Command.SINGLE_SUCCESS;
-                })
-            ));
-        }
-
-        if(!config.disable_rules){
-            CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal("rules")
-                .executes(context -> {
-                    if(config.disable_rules){
-                        context.getSource().sendMessage(Text.literal("§cThe /rules command is disabled! Please notify the administration, that they should reset the server, or the players will be able to use the command, and get that message."));
-                    }else{
-                        for(String line:config.rules_text){
-                            context.getSource().sendMessage(Text.literal(line));
-                        }
-                    }
-                    return Command.SINGLE_SUCCESS;
-                })
-            ));
-        }
-
+        // Commands
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-            final LiteralCommandNode<ServerCommandSource> broadcastNode = dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal("broadcast")
+            // Info command
+            if(!config.disable_info) {
+                dispatcher.register(
+                    LiteralArgumentBuilder.<ServerCommandSource>literal("info")
+                    .executes(context -> {
+                        if(config.disable_info) {
+                            context.getSource().sendMessage(Text.literal("§cThe /info command is disabled! Please notify the administration, that they should reset the server, or the players will be able to use the command, and get that message."));
+                        } else {
+                            for(String line:config.info_text) {
+                                context.getSource().sendMessage(Text.literal(line));
+                            }
+                        }
+                        return Command.SINGLE_SUCCESS;
+                    })
+                );
+            }
+
+            // Rules command
+            if(!config.disable_rules) {
+                dispatcher.register(
+                    LiteralArgumentBuilder.<ServerCommandSource>literal("rules")
+                    .executes(context -> {
+                        if(config.disable_rules) {
+                            context.getSource().sendMessage(Text.literal("§cThe /rules command is disabled! Please notify the administration, that they should reset the server, or the players will be able to use the command, and get that message."));
+                        } else {
+                            for(String line:config.rules_text) {
+                                context.getSource().sendMessage(Text.literal(line));
+                            }
+                        }
+                        return Command.SINGLE_SUCCESS;
+                    })
+                );
+            }
+
+            // Broadcast command
+            final LiteralCommandNode<ServerCommandSource> broadcastCommandNode = dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal("broadcast")
                 .requires(source -> source.hasPermissionLevel(3))
                 .then(CommandManager.argument("message", StringArgumentType.greedyString()))
                 .executes(context -> {
@@ -124,7 +123,19 @@ public class BlaysUtils implements DedicatedServerModInitializer {
                     return Command.SINGLE_SUCCESS;
                 })
             );
-            dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal("bc").redirect(broadcastNode));
+            dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal("bc").redirect(broadcastCommandNode));
+
+            // Config reload command
+            final LiteralCommandNode<ServerCommandSource> blaysUtilsReloadCommandNode = dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal("blays-utils-reload")
+                .requires(source -> source.hasPermissionLevel(4))
+                .executes(context -> {
+                    context.getSource().sendMessage(Text.literal("Reloading blay's server utilities' config..."));
+                    updateConfig();
+                    return Command.SINGLE_SUCCESS;
+                })
+            );
+            dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal("blays-utilities-reload").redirect(blaysUtilsReloadCommandNode));
+            dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal("blays-server-utilities-reload").redirect(blaysUtilsReloadCommandNode));
         });
     }
 }
