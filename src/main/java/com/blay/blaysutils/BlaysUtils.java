@@ -6,13 +6,12 @@ import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 
 import com.mojang.logging.LogUtils;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.Command;
 
-import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.command.CommandManager;
+import net.minecraft.command.argument.MessageArgumentType;
 import net.minecraft.text.Text;
 
 import com.google.gson.Gson;
@@ -76,31 +75,15 @@ public class BlaysUtils implements DedicatedServerModInitializer {
     public void onInitializeServer() {
         LogUtils.getLogger().info("Loading Blay's Server Utilities...");
 
+        // Updating the config on startup
         updateConfig();
 
         // Commands
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-            // Info command
-            if(!config.disable_info) {
-                dispatcher.register(
-                    LiteralArgumentBuilder.<ServerCommandSource>literal("info")
-                    .executes(context -> {
-                        if(config.disable_info) {
-                            context.getSource().sendMessage(Text.literal("§cThe /info command is disabled! Please notify the administration, that they should reset the server, or the players will be able to use the command, and get that message."));
-                        } else {
-                            for(String line:config.info_text) {
-                                context.getSource().sendMessage(Text.literal(line));
-                            }
-                        }
-                        return Command.SINGLE_SUCCESS;
-                    })
-                );
-            }
-
             // Rules command
             if(!config.disable_rules) {
                 dispatcher.register(
-                    LiteralArgumentBuilder.<ServerCommandSource>literal("rules")
+                    (LiteralArgumentBuilder)CommandManager.literal("rules")
                     .executes(context -> {
                         if(config.disable_rules) {
                             context.getSource().sendMessage(Text.literal("§cThe /rules command is disabled! Please notify the administration, that they should reset the server, or the players will be able to use the command, and get that message."));
@@ -114,19 +97,40 @@ public class BlaysUtils implements DedicatedServerModInitializer {
                 );
             }
 
+            // Info command
+            if(!config.disable_info) {
+                LiteralCommandNode informationLiteralCommandNode = dispatcher.register(
+                    (LiteralArgumentBuilder)CommandManager.literal("information")
+                    .executes(context -> {
+                        if(config.disable_info) {
+                            context.getSource().sendMessage(Text.literal("§cThe /info command is disabled! Please notify the administration, that they should reset the server, or the players will be able to use the command, and get that message."));
+                        } else {
+                            for(String line:config.info_text) {
+                                context.getSource().sendMessage(Text.literal(line));
+                            }
+                        }
+                        return Command.SINGLE_SUCCESS;
+                    })
+                );
+                dispatcher.register((LiteralArgumentBuilder)CommandManager.literal("info").redirect(informationLiteralCommandNode));
+            }
+
             // Broadcast command
-            final LiteralCommandNode<ServerCommandSource> broadcastCommandNode = dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal("broadcast")
+            LiteralCommandNode broadcastLiteralCommandNode = dispatcher.register(
+                (LiteralArgumentBuilder)CommandManager.literal("broadcast")
                 .requires(source -> source.hasPermissionLevel(3))
-                .then(CommandManager.argument("message", StringArgumentType.greedyString()))
+                .then(CommandManager.argument("message", MessageArgumentType.message()))
                 .executes(context -> {
-                    System.out.println(StringArgumentType.getString(context, "message"));
+                    System.out.println("test");
+                    System.out.println(MessageArgumentType.getMessage(context, "message").getString());
                     return Command.SINGLE_SUCCESS;
                 })
             );
-            dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal("bc").redirect(broadcastCommandNode));
+            dispatcher.register((LiteralArgumentBuilder)CommandManager.literal("bc").redirect(broadcastLiteralCommandNode));
 
             // Config reload command
-            final LiteralCommandNode<ServerCommandSource> blaysUtilsReloadCommandNode = dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal("blays-utils-reload")
+            LiteralCommandNode blaysUtilsReloadLiteralCommandNode = dispatcher.register(
+                (LiteralArgumentBuilder)CommandManager.literal("blays-utilities-reload")
                 .requires(source -> source.hasPermissionLevel(4))
                 .executes(context -> {
                     context.getSource().sendMessage(Text.literal("Reloading blay's server utilities' config..."));
@@ -134,8 +138,9 @@ public class BlaysUtils implements DedicatedServerModInitializer {
                     return Command.SINGLE_SUCCESS;
                 })
             );
-            dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal("blays-utilities-reload").redirect(blaysUtilsReloadCommandNode));
-            dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal("blays-server-utilities-reload").redirect(blaysUtilsReloadCommandNode));
+            dispatcher.register((LiteralArgumentBuilder)CommandManager.literal("blays-utilities-reload").redirect(blaysUtilsReloadLiteralCommandNode));
+            dispatcher.register((LiteralArgumentBuilder)CommandManager.literal("blays-server-utils-reload").redirect(blaysUtilsReloadLiteralCommandNode));
+            dispatcher.register((LiteralArgumentBuilder)CommandManager.literal("blays-server-utilities-reload").redirect(blaysUtilsReloadLiteralCommandNode));
         });
     }
 }

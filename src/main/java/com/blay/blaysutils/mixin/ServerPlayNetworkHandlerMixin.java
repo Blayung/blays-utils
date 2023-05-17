@@ -17,11 +17,12 @@ import com.blay.blaysutils.BlaysUtils;
 public class ServerPlayNetworkHandlerMixin {
 	@Inject(at = @At("RETURN"), method = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;<init>(Lnet/minecraft/server/MinecraftServer;Lnet/minecraft/network/ClientConnection;Lnet/minecraft/server/network/ServerPlayerEntity;)V")
 	private void inject(MinecraftServer server, ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci) {
-        if(!BlaysUtils.config.disable_hello_message){
+        // On player join
+        if(!BlaysUtils.config.disable_hello_message) {
             for(String line : BlaysUtils.config.hello_text) {
-                line=line.replace("%%", "\uf420");
+                line=line.replace("%%", "\uf069");
                 line=line.replace("%p", player.getName().getString());
-                line=line.replace("\uf420", "%");
+                line=line.replace("\uf069", "%");
                 player.sendMessage(Text.literal(line));
             }
         }
