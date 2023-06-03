@@ -130,7 +130,7 @@ public class BlaysUtils implements DedicatedServerModInitializer {
 
             // Config reload command
             LiteralCommandNode blaysUtilsReloadLiteralCommandNode = dispatcher.register(
-                (LiteralArgumentBuilder)CommandManager.literal("blays-utilities-reload")
+                (LiteralArgumentBuilder)CommandManager.literal("blays-utils-reload")
                 .requires(source -> source.hasPermissionLevel(4))
                 .executes(context -> {
                     context.getSource().sendMessage(Text.literal("Reloading blay's server utilities' config..."));
